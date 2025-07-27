@@ -77,16 +77,6 @@ This will:
 
 - Output: 3 neurons (Softmax) for multi-class classification (Rock, Paper, Scissors)
 
-
-
-## 📁 Files in the Project
-
-- `hand_landmark_data.py`: Script to extract hand landmarks and save to CSV.
-- `train_model.py`: Script to train and save the gesture classification model.
-- `hand_landmarks_dataset.csv`: Generated dataset of features and labels.
-- `hand_landmark_model.h5`: Trained deep learning model.
-- `scaler.pkl`: Scaler used for feature normalization.
-
 ---
 
 ## 🎯 How It Works
