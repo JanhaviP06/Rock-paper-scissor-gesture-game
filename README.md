@@ -1,8 +1,7 @@
 
 # Rock Paper Scissors Game  
-### _Reimagining a Classic with Computer Vision_
 
-![Project Banner](images/Project Banner.jpg) 
+>![image](https://github.com/JanhaviP06/Rock-paper-scissor-gesture-game/blob/main/images/Project%20Banner.jpg)
 
 ## 🧠 Project Overview
 
@@ -103,8 +102,8 @@ This will:
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/JanhaviP06/Tasky-To-Do-App.git
-cd Tasky-To-Do-App
+git clone [https://github.com/JanhaviP06/Rock-paper-scissor-gesture-game.git]
+cd Rock-paper-scissor-gesture-game
 ```
 
 2. **Create a virtual environment**
