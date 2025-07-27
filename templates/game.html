@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rock Paper Scissors | Game</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(to right, #232526, #414345);
+      overflow-x: hidden;
+      color: #333;
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 40px 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      margin-top: 60px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: fadeIn 1.2s ease;
+    }
+
+    h1.game-title {
+      text-align: center;
+      font-size: 3rem;
+      color: #56021F;
+      margin-bottom: 0.3em;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    h1.game-title:hover {
+      color: #ff8800;
+      transform: scale(1.05);
+      text-shadow: 0 3px 10px rgba(255, 153, 0, 0.5);
+    }
+
+    .video-wrapper {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .video-container {
+      text-align: center;
+    }
+
+    .video-container img {
+      width: 240px;
+      height: 200px;
+      border-radius: 15px;
+      border: 4px solid #6C757D;
+      object-fit: cover;
+      margin-top: 10px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      margin: 25px 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .score {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 12px;
+      width: 140px;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .score:hover {
+      background: #ffd70033;
+      transform: scale(1.05);
+    }
+
+    .score h2 {
+      font-size: 20px;
+      color: #56021F;
+      margin-bottom: 5px;
+    }
+
+    .score p {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-weight: bold;
+      color: #56021F;
+    }
+
+    .btn {
+      background: #56021F;
+      color: white;
+      font-size: 18px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      background: #1B1464;
+      transform: scale(1.05);
+    }
+
+    .btn:disabled {
+      background: #888;
+      cursor: not-allowed;
+    }
+
+    #winner-text {
+      font-size: 26px;
+      font-weight: bold;
+      color: #FF5733;
+      margin-top: 20px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .winner {
+      background: #4CAF50;
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      display: inline-block;
+      animation: pop 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.9); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      .video-wrapper, .scoreboard {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="container">
+    <h1 class="game-title">🎮 Rock Paper Scissors Game</h1>
+    <h3 style="text-align:center; color:#444;">AI-powered hand gesture detection vs Computer!</h3>
+
+    <div class="video-wrapper">
+      <div class="video-container">
+        <h2>User</h2>
+        <img id="video-feed" src="{{ url_for('video_feed') }}" alt="User Video Feed" />
+        <p id="detected-label">Detecting hand...</p>
+      </div>
+      <div class="video-container">
+        <h2>Computer</h2>
+        <img id="computer-choice" src="/static/images/comp.jpg" alt="Computer Choice" />
+      </div>
+    </div>
+
+    <div class="scoreboard">
+      <div class="score">
+        <h2>User</h2>
+        <p id="user-score">0</p>
+      </div>
+      <div class="score">
+        <h2>Computer</h2>
+        <p id="computer-score">0</p>
+      </div>
+    </div>
+<p id="countdown" style="text-align:center; font-size: 30px; color: #007bff; margin: 10px 0;"></p>
+
+    <p id="winner-text"></p>
+    <p id="thank-you-text" style="display: none; font-size: 22px; color: #28a745; text-align:center;">
+      🎉 Thank you for playing! 🎉
+    </p>
+
+    <div style="text-align:center;">
+      <button class="btn" onclick="playGame()">▶ Play Round</button>
+      <button class="btn" onclick="resetGame()">🔄 Reset</button>
+      <button class="btn" onclick="stopGame()">🛑 Stop</button>
+      <button class="btn" onclick="restartGame()" style="display: none;" id="restart-btn">🔁 Restart</button>
+    </div>
+
+      <a href="https://www.linkedin.com/in/janhavi-phulavare" target="_blank" style="text-decoration:none">
+     <div class="footer"> Made with ❤️ by Janhavi </div></a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS.load('particles-js', 'https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js@master/demo/particles.json');
+
+    let gameRunning = true;
+
+    function resetGame() {
+      if (!confirm("Are you sure you want to reset scores?")) return;
+      fetch('/reset', { method: 'POST' })
+        .then(response => response.json())
+        .then(() => {
+          document.getElementById('user-score').innerText = "0";
+          document.getElementById('computer-score').innerText = "0";
+          document.getElementById('winner-text').innerText = "";
+        })
+        .catch(() => {
+          document.getElementById('winner-text').innerText = "⚠️ Unable to reset.";
+        });
+    }
+
+  function playGame() {
+    if (!gameRunning) return;
+
+    let countdownEl = document.getElementById('countdown');
+    let winnerText = document.getElementById('winner-text');
+    winnerText.innerText = "";
+    countdownEl.innerText = "";
+
+    let count = 3;
+    countdownEl.innerText = `Revealing in ${count}...`;
+    let countdownInterval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownEl.innerText = `Revealing in ${count}...`;
+      } else {
+        clearInterval(countdownInterval);
+        countdownEl.innerText = "";
+
+        // Fetch result after countdown
+        fetch('/play')
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById('detected-label').innerText = data.user !== "None" ? `You: ${data.user}` : "No hand detected";
+            document.getElementById('computer-choice').src = data.computer ? `/static/images/${data.computer.toLowerCase()}.png` : "/static/images/question.png";
+
+            let userScoreEl = document.getElementById('user-score');
+            let compScoreEl = document.getElementById('computer-score');
+            winnerText.classList.remove("winner");
+
+            if (data.winner === "User") {
+              userScoreEl.innerText = +userScoreEl.innerText + 1;
+              winnerText.innerHTML = "🎉 Winner: <span class='winner'>User</span>";
+              launchConfetti();
+            } else if (data.winner === "Computer") {
+              compScoreEl.innerText = +compScoreEl.innerText + 1;
+              winnerText.innerHTML = "🤖 Winner: <span class='winner'>Computer</span>";
+            } else {
+              winnerText.innerText = "It's a Tie! 🤝";
+            }
+
+            disableButtonsTemporarily();
+          })
+          .catch(() => {
+            winnerText.innerText = "⚠️ Server issue.";
+          });
+      }
+    }, 1000);
+  }
+
+  function launchConfetti() {
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.6 }
+    });
+  }
+
+
+    function disableButtonsTemporarily() {
+      document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
+      setTimeout(() => {
+        if (gameRunning) {
+          document.querySelectorAll('.btn').forEach(btn => btn.disabled = false);
+        }
+      }, 2000);
+    }
+
+    function stopGame() {
+  gameRunning = false;
+  fetch('/stop_game')
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('winner-text').innerText = "🏁 Final Winner: " + data.final_winner;
+// 🎉 Launch confetti
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+
+      // Disable all buttons EXCEPT the restart button
+      document.querySelectorAll(".btn").forEach(btn => {
+        if (btn.id !== "restart-btn") {
+          btn.disabled = true;
+        }
+      });
+
+      // Show and enable the restart button
+      const restartBtn = document.getElementById("restart-btn");
+      restartBtn.style.display = "inline-block";
+      restartBtn.disabled = false;
+
+      document.getElementById("thank-you-text").style.display = "block";
+    })
+    .catch(() => {
+      document.getElementById('winner-text').innerText = "⚠️ Unable to stop game.";
+    });
+}
+
+    function restartGame() {
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>
